@@ -9,18 +9,19 @@
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root{
-    --ink:#0D1420;
-    --panel:#141D2B;
-    --panel-2:#1B2637;
-    --line:#26334A;
-    --text:#E7ECF5;
-    --text-muted:#8FA0BC;
-    --accent:#5B8DEF;
-    --accent-soft:rgba(91,141,239,.14);
-    --amber:#F2A65A;
-    --amber-soft:rgba(242,166,90,.14);
-    --good:#6FCF97;
-    --good-soft:rgba(111,207,151,.14);
+    --ink:#0F1C19;
+    --panel:#172622;
+    --panel-2:#1E322C;
+    --line:#2D453D;
+    --text:#EBF4EE;
+    --text-muted:#93AA9F;
+    --accent:#5FD9AA;
+    --accent-soft:rgba(95,217,170,.14);
+    --accent-2:#FFB877;
+    --amber:#FFB877;
+    --amber-soft:rgba(255,184,119,.14);
+    --good:#8FE0B8;
+    --good-soft:rgba(143,224,184,.14);
     --radius:10px;
     --maxw:920px;
   }
@@ -37,8 +38,8 @@
   body{
     margin:0;
     background:
-      radial-gradient(1200px 600px at 15% -10%, rgba(91,141,239,.10), transparent 60%),
-      radial-gradient(900px 500px at 100% 10%, rgba(242,166,90,.06), transparent 55%),
+      radial-gradient(1100px 550px at 12% -8%, rgba(95,217,170,.10), transparent 60%),
+      radial-gradient(850px 480px at 100% 8%, rgba(255,184,119,.07), transparent 55%),
       var(--ink);
     color:var(--text);
     font-family:'Inter',system-ui,sans-serif;
@@ -58,10 +59,25 @@
 
   .wrap{max-width:var(--maxw); margin:0 auto; padding:0 24px;}
 
+  /* ---------- Scroll reveal ---------- */
+  .reveal{
+    opacity:0;
+    transform:translateY(26px);
+    transition:opacity .7s cubic-bezier(.16,.8,.3,1), transform .7s cubic-bezier(.16,.8,.3,1);
+    will-change:opacity, transform;
+  }
+  .reveal.in-view{opacity:1; transform:translateY(0);}
+  .reveal-item{
+    opacity:0;
+    transform:translateY(18px);
+    transition:opacity .55s ease, transform .55s ease;
+  }
+  .reveal-item.in-view{opacity:1; transform:translateY(0);}
+
   /* ---------- Top editor chrome ---------- */
   .titlebar{
     position:sticky; top:0; z-index:50;
-    background:rgba(13,20,32,.86);
+    background:rgba(21,16,13,.86);
     backdrop-filter:blur(10px);
     border-bottom:1px solid var(--line);
   }
@@ -74,7 +90,7 @@
   .dots span{width:10px; height:10px; border-radius:50%; display:block;}
   .dots span:nth-child(1){background:#F2726B;}
   .dots span:nth-child(2){background:#F2C46B;}
-  .dots span:nth-child(3){background:#6FCF97;}
+  .dots span:nth-child(3){background:#8FBF7F;}
   .repo-path{
     font-size:12.5px; color:var(--text-muted); white-space:nowrap;
   }
@@ -85,32 +101,54 @@
   }
   .tabs::-webkit-scrollbar{display:none;}
   .tab{
+    position:relative;
     font-family:'JetBrains Mono',monospace;
     font-size:12.5px;
     color:var(--text-muted);
     background:transparent;
     border:none;
-    border-bottom:2px solid transparent;
     padding:16px 12px 14px;
     cursor:pointer;
     white-space:nowrap;
     text-decoration:none;
-    transition:color .15s ease, border-color .15s ease;
+    transition:color .15s ease;
+  }
+  .tab::after{
+    content:"";
+    position:absolute; left:12px; right:12px; bottom:0; height:2px;
+    background:var(--accent);
+    transform:scaleX(0); transform-origin:left;
+    transition:transform .25s cubic-bezier(.4,0,.2,1);
   }
   .tab:hover{color:var(--text);}
-  .tab.active{color:var(--text); border-color:var(--accent);}
+  .tab:hover::after{transform:scaleX(.4);}
+  .tab.active{color:var(--text);}
+  .tab.active::after{transform:scaleX(1);}
 
   @media (max-width:640px){
     .repo-path{display:none;}
   }
 
   /* ---------- Hero ---------- */
-  .hero{padding:72px 0 56px; border-bottom:1px solid var(--line);}
+  .hero{
+    position:relative; overflow:hidden;
+    padding:72px 0 56px; border-bottom:1px solid var(--line);
+  }
+  .hero::before{
+    content:"";
+    position:absolute; inset:0;
+    background:radial-gradient(560px circle at var(--mx,50%) var(--my,10%), rgba(95,217,170,.16), transparent 45%);
+    pointer-events:none;
+    transition:opacity .3s ease;
+  }
+  .hero > .wrap{position:relative; z-index:1;}
+
   .term{
     background:var(--panel);
     border:1px solid var(--line);
     border-radius:var(--radius);
     overflow:hidden;
+    box-shadow:0 20px 50px -25px rgba(0,0,0,.6);
   }
   .term-head{
     display:flex; align-items:center; gap:8px;
@@ -150,23 +188,36 @@
     padding:5px 10px; border-radius:100px;
     border:1px solid var(--line); color:var(--text-muted);
     background:var(--panel);
+    transition:border-color .2s ease, transform .2s ease;
   }
-  .badge.on{ color:var(--good); border-color:rgba(111,207,151,.35); background:var(--good-soft);}
+  .badge:hover{transform:translateY(-1px); border-color:var(--line);}
+  .badge.on{ color:var(--good); border-color:rgba(143,191,127,.35); background:var(--good-soft);}
   .badge.on::before{content:"● "; }
 
   .cta-row{display:flex; flex-wrap:wrap; gap:12px; margin-top:28px;}
   .btn{
+    position:relative; overflow:hidden;
     font-family:'JetBrains Mono',monospace; font-size:13px; font-weight:500;
     padding:11px 18px; border-radius:8px; text-decoration:none;
     display:inline-flex; align-items:center; gap:8px;
     border:1px solid var(--line);
-    transition:transform .12s ease, border-color .12s ease, background .12s ease;
+    transition:transform .18s cubic-bezier(.4,0,.2,1), border-color .18s ease, background .18s ease, box-shadow .18s ease;
   }
-  .btn:hover{transform:translateY(-1px);}
-  .btn-primary{background:var(--accent); color:#0D1420; border-color:var(--accent); font-weight:600;}
-  .btn-primary:hover{background:#6f9bf3;}
+  .btn::after{
+    content:"";
+    position:absolute; top:0; left:-60%; width:40%; height:100%;
+    background:linear-gradient(120deg, transparent, rgba(255,255,255,.35), transparent);
+    transform:skewX(-20deg);
+    transition:left .55s ease;
+    pointer-events:none;
+  }
+  .btn:hover::after{left:130%;}
+  .btn:hover{transform:translateY(-2px);}
+  .btn:active{transform:translateY(0px) scale(.98);}
+  .btn-primary{background:var(--accent); color:#0F1C19; border-color:var(--accent); font-weight:600;}
+  .btn-primary:hover{background:#79e4bc; box-shadow:0 10px 24px -10px rgba(95,217,170,.5);}
   .btn-ghost{color:var(--text); background:var(--panel);}
-  .btn-ghost:hover{border-color:var(--accent);}
+  .btn-ghost:hover{border-color:var(--accent); box-shadow:0 10px 24px -14px rgba(95,217,170,.4);}
 
   /* ---------- Section shell (file view) ---------- */
   section{padding:64px 0; border-bottom:1px solid var(--line);}
@@ -193,7 +244,9 @@
     content:""; position:absolute; left:-25px; top:5px;
     width:9px; height:9px; border-radius:50%; background:var(--ink);
     border:2px solid var(--accent);
+    transition:box-shadow .2s ease;
   }
+  .tl-item:hover::before{box-shadow:0 0 0 4px var(--accent-soft);}
   .tl-item .date{font-family:'JetBrains Mono',monospace; font-size:11.5px; color:var(--amber);}
   .tl-item h3{font-size:15.5px; margin-top:4px;}
   .tl-item .org{color:var(--text-muted); font-size:13.5px;}
@@ -209,15 +262,21 @@
     font-family:'JetBrains Mono',monospace; font-size:12.5px;
     background:var(--panel); border:1px solid var(--line); color:var(--text);
     padding:6px 10px; border-radius:6px;
+    transition:transform .15s ease, border-color .15s ease, background .15s ease;
   }
+  .chip:hover{transform:translateY(-2px); border-color:var(--accent); background:var(--panel-2);}
 
   /* ---------- Projects ---------- */
   .project{
     background:var(--panel); border:1px solid var(--line); border-radius:var(--radius);
     padding:24px; margin-bottom:20px;
-    transition:border-color .15s ease, transform .15s ease;
+    transition:border-color .2s ease, transform .2s ease, box-shadow .2s ease;
   }
-  .project:hover{border-color:var(--accent); transform:translateY(-2px);}
+  .project:hover{
+    border-color:var(--accent);
+    transform:translateY(-4px);
+    box-shadow:0 22px 44px -28px rgba(95,217,170,.32);
+  }
   .project-head{display:flex; align-items:flex-start; justify-content:space-between; gap:12px; flex-wrap:wrap;}
   .project-head h3{font-size:18px;}
   .project-head h3 .path{color:var(--text-muted); font-weight:400; font-family:'JetBrains Mono',monospace; font-size:13px;}
@@ -226,22 +285,25 @@
     font-family:'JetBrains Mono',monospace; font-size:11px; padding:4px 9px; border-radius:100px;
     white-space:nowrap;
   }
-  .status.active{color:var(--good); background:var(--good-soft); border:1px solid rgba(111,207,151,.3);}
-  .status.shipped{color:var(--accent); background:var(--accent-soft); border:1px solid rgba(91,141,239,.3);}
-  .status.hack{color:var(--amber); background:var(--amber-soft); border:1px solid rgba(242,166,90,.3);}
+  .status.active{color:var(--good); background:var(--good-soft); border:1px solid rgba(143,191,127,.3);}
+  .status.shipped{color:var(--accent); background:var(--accent-soft); border:1px solid rgba(95,217,170,.3);}
+  .status.hack{color:var(--amber); background:var(--amber-soft); border:1px solid rgba(242,194,48,.3);}
 
   .project p.desc{color:var(--text-muted); margin:14px 0 16px; font-size:14.5px;}
   .project .tech{display:flex; flex-wrap:wrap; gap:7px; margin-bottom:16px;}
   .project .tech span{
     font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--text-muted);
     border:1px solid var(--line); padding:3px 8px; border-radius:5px;
+    transition:border-color .15s ease, color .15s ease;
   }
+  .project:hover .tech span{border-color:var(--line);}
   .project-links{display:flex; gap:16px;}
   .project-links a{
     font-family:'JetBrains Mono',monospace; font-size:12.5px; text-decoration:none;
     display:inline-flex; align-items:center; gap:6px;
+    transition:gap .15s ease, color .15s ease;
   }
-  .project-links a:hover{text-decoration:underline;}
+  .project-links a:hover{gap:9px; color:var(--accent-2);}
 
   /* ---------- Achievements ---------- */
   .stat-row{display:grid; grid-template-columns:repeat(3,1fr); gap:16px;}
@@ -249,7 +311,9 @@
   .stat{
     background:var(--panel); border:1px solid var(--line); border-radius:var(--radius);
     padding:20px;
+    transition:transform .2s ease, border-color .2s ease;
   }
+  .stat:hover{transform:translateY(-3px); border-color:var(--accent);}
   .stat .num{font-family:'Sora',sans-serif; font-size:28px; font-weight:700; color:var(--accent);}
   .stat .lbl{color:var(--text-muted); font-size:13px; margin-top:4px;}
 
@@ -257,7 +321,9 @@
   .cert{
     font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--text-muted);
     border:1px dashed var(--line); padding:7px 12px; border-radius:6px;
+    transition:border-color .15s ease, color .15s ease;
   }
+  .cert:hover{border-color:var(--amber); color:var(--text);}
 
   /* ---------- Contact / footer ---------- */
   footer{padding:56px 0 80px;}
@@ -293,7 +359,7 @@
   </div>
 </div>
 
-<header class="hero">
+<header class="hero" id="heroSection">
   <div class="wrap">
     <div class="term">
       <div class="term-head"><div class="dots"><span></span><span></span><span></span></div>&nbsp; zsh</div>
@@ -304,7 +370,7 @@
     </div>
 
     <h1>Building full-stack products, <span class="role">one clean commit at a time.</span></h1>
-    <p class="lede">MCA (Full-Stack Development) student based in Raipur, working across the MERN stack, Java/C++, and SQL — currently shipping a placement tracker, a production-style video platform API, and an AI compliance checker for Smart India Hackathon 2026.</p>
+    <p class="lede">MCA (Full-Stack Development) student based in Raipur, working across the MERN stack, Java/C++, and SQL — currently shipping a recruitment platform, a production-style video API, and a personal application tracker built as a standalone REST service.</p>
 
     <div class="badges">
       <span class="badge on">open to internships</span>
@@ -320,7 +386,7 @@
   </div>
 </header>
 
-<section id="about">
+<section id="about" class="reveal">
   <div class="wrap">
     <div class="file-label"><span class="path">/about.md</span><span class="rule"></span></div>
     <h2>About</h2>
@@ -329,17 +395,17 @@
     <div class="about-grid">
       <div>
         <p>I'm a developer based in <b>Raipur, Chhattisgarh</b>, currently pursuing an <b>MCA in Full-Stack Development</b> at Rungta International Skill University. My focus is the MERN stack — React on the front end, Node/Express and MongoDB (alongside PostgreSQL, MySQL, and Oracle SQL) on the back — with Java and C++ underneath for data structures and problem solving.</p>
-        <p>I like projects with a real user problem attached: a tracker for students drowning in job applications, a compliance checker inspectors can actually use, an API built like it has to survive production, not just a demo. I debug in public — CORS errors, JWT edge cases, aggregation pipelines — and write it all up as I go.</p>
-        <p>Right now I'm preparing for internship interviews, building out my project portfolio, and competing in Smart India Hackathon 2026 with team <b>Bug_Slayer</b>.</p>
+        <p>I like projects with a real user problem attached: a recruitment platform with real hiring workflows, a personal tracker that keeps my own applications organized, an API built like it has to survive production, not just a demo. I debug in public — CORS errors, JWT edge cases, aggregation pipelines — and write it all up as I go.</p>
+        <p>Right now I'm preparing for internship interviews and building out my project portfolio.</p>
       </div>
 
       <div class="timeline">
-        <div class="tl-item">
+        <div class="tl-item reveal-item">
           <div class="date">SEP 2025 — JUL 2027</div>
           <h3>MCA, Full-Stack Development</h3>
           <div class="org">Rungta International Skill University, Bhilai</div>
         </div>
-        <div class="tl-item">
+        <div class="tl-item reveal-item">
           <div class="date">AUG 2022 — APR 2025</div>
           <h3>BCA</h3>
           <div class="org">Pt. Ravishankar Shukla University, Raipur</div>
@@ -349,7 +415,7 @@
   </div>
 </section>
 
-<section id="stack">
+<section id="stack" class="reveal">
   <div class="wrap">
     <div class="file-label"><span class="path">/stack.json</span><span class="rule"></span></div>
     <h2>Tech stack</h2>
@@ -398,71 +464,84 @@
   </div>
 </section>
 
-<section id="projects">
+<section id="projects" class="reveal">
   <div class="wrap">
     <div class="file-label"><span class="path">/projects</span><span class="rule"></span></div>
     <h2>Projects</h2>
     <p class="intro">Selected work — most recent first.</p>
 
-    <div class="project">
+    <div class="project reveal-item">
       <div class="project-head">
-        <h3>Packaged Commodities Compliance Checker <span class="path">// SIH26034</span></h3>
-        <span class="status hack">SIH 2026 — team Bug_Slayer</span>
+        <h3>JobTrackr <span class="path">// placement-job-tracker</span></h3>
+        <span class="status shipped">live · production deploy</span>
       </div>
-      <p class="desc">An AI-powered system that checks packaged-product labels against India's Legal Metrology Packaged Commodities Rules, 2011. The flow: image capture → OCR extraction → AI field extraction → category detection → a rule-based compliance engine → scoring and evidence → inspector review → report generation.</p>
+      <p class="desc">A full-stack recruitment platform with dual role-based workflows for students and recruiters — 27 REST API endpoints covering resume upload/streaming, a 6-stage application pipeline (applied → shortlisted → interview-scheduled → interviewed → offered/rejected) with status-change history, and interactive hiring analytics dashboards for both sides.</p>
       <div class="tech">
-        <span>React</span><span>Vite</span><span>Tailwind</span><span>shadcn/ui</span>
-        <span>Node.js</span><span>Express</span><span>MongoDB</span>
-        <span>Tesseract OCR</span><span>Gemini Vision API</span><span>JWT</span>
+        <span>React 19</span><span>Vite</span><span>Zustand</span><span>Recharts</span>
+        <span>Node.js</span><span>Express 5</span><span>MongoDB Atlas</span><span>Mongoose</span>
+        <span>JWT</span><span>Cloudinary</span><span>Multer</span>
       </div>
       <div class="project-links">
-        <span class="mono" style="color:var(--text-muted)">Problem Statement SIH26034 · Software category</span>
+        <a href="https://github.com/SagarS2005/Job-Tracker-Full-Stack-Project" target="_blank" rel="noopener">GitHub repo →</a>
+        <a href="https://job-tracker-delta-gold.vercel.app/" target="_blank" rel="noopener">Live demo →</a>
       </div>
     </div>
 
-    <div class="project">
+    <div class="project reveal-item">
       <div class="project-head">
         <h3>VidTube <span class="path">// youtube-clone-api</span></h3>
         <span class="status shipped">production-style API</span>
       </div>
-      <p class="desc">A production-grade REST API for a video-sharing platform with video CRUD, comments, likes, subscriptions, playlists, and aggregation-based channel analytics. Implemented JWT access/refresh token rotation with HTTP-only cookies, ownership-based authorization, and Multer + Cloudinary for media management.</p>
+      <p class="desc">A production-grade YouTube-clone REST API: video CRUD, comments, likes, subscriptions, playlists, and a channel dashboard with aggregation-based stats. Auth uses JWT access/refresh token rotation with HTTP-only cookies; media handled via Multer and Cloudinary.</p>
       <div class="tech">
         <span>Node.js</span><span>Express</span><span>MongoDB</span>
         <span>JWT</span><span>Multer</span><span>Cloudinary</span>
       </div>
       <div class="project-links">
         <a href="https://github.com/SagarS2005/VidTube" target="_blank" rel="noopener">GitHub repo →</a>
-        <br>
-        <a href="https://vidtube-k8vd.onrender.com/" target="_blank" rel="noopener">Go to project →</a>
       </div>
     </div>
 
-    <div class="project">
+    <div class="project reveal-item">
       <div class="project-head">
-        <h3>Placement &amp; Job Tracker <span class="path">// Placement-Job-tracker</span></h3>
+        <h3>ApplyLog API <span class="path">// Placement-Job-tracker</span></h3>
         <span class="status active">in active development</span>
       </div>
-      <p class="desc">A full-stack MERN app that helps students applying to many companies keep every application organized instead of losing track of status, deadlines, and follow-ups.</p>
+      <p class="desc">A personal jobs &amp; internship application tracker, built as a standalone REST API — no admin or recruiter side. A student registers their own applications, updates status as it changes (applied → shortlisted → interview → offered/rejected), and queries their own history, so nothing gets forgotten across dozens of applications.</p>
       <div class="tech">
-        <span>React</span><span>Node.js</span><span>Express</span><span>MongoDB</span><span>JWT</span>
+        <span>Node.js</span><span>Express</span><span>MongoDB</span><span>JWT</span><span>REST API</span>
       </div>
       <div class="project-links">
         <a href="https://github.com/SagarS2005/Placement-Job-tracker" target="_blank" rel="noopener">GitHub repo →</a>
       </div>
     </div>
+
+    <div class="project reveal-item">
+      <div class="project-head">
+        <h3>Dynamic Weather Dashboard <span class="path">// Dynamic-Weather-Dashboard</span></h3>
+        <span class="status shipped">frontend</span>
+      </div>
+      <p class="desc">A modern weather app built with React — real-time weather data, city-based search, dynamic weather icons that shift with conditions, and multi-day forecasts pulled from a live weather API.</p>
+      <div class="tech">
+        <span>React</span><span>Axios</span><span>OpenWeather API</span>
+      </div>
+      <div class="project-links">
+        <a href="https://github.com/SagarS2005/Dynamic-Weather-Dashboard" target="_blank" rel="noopener">GitHub repo →</a>
+      </div>
+    </div>
   </div>
 </section>
 
-<section id="achievements">
+<section id="achievements" class="reveal">
   <div class="wrap">
     <div class="file-label"><span class="path">/achievements.log</span><span class="rule"></span></div>
     <h2>Achievements &amp; certifications</h2>
     <p class="intro">Numbers and credentials, at a glance.</p>
 
     <div class="stat-row">
-      <div class="stat"><div class="num">150+</div><div class="lbl">DSA problems solved on LeetCode</div></div>
-      <div class="stat"><div class="num">3</div><div class="lbl">Active full-stack projects</div></div>
-      <div class="stat"><div class="num">5</div><div class="lbl">Professional certifications</div></div>
+      <div class="stat reveal-item"><div class="num">150+</div><div class="lbl">DSA problems solved on LeetCode</div></div>
+      <div class="stat reveal-item"><div class="num">4</div><div class="lbl">Active full-stack projects</div></div>
+      <div class="stat reveal-item"><div class="num">5</div><div class="lbl">Professional certifications</div></div>
     </div>
 
     <div class="cert-list">
@@ -475,16 +554,16 @@
   </div>
 </section>
 
-<footer id="contact">
+<footer id="contact" class="reveal">
   <div class="wrap">
     <div class="file-label"><span class="path">/contact.sh</span><span class="rule"></span></div>
     <h2>Get in touch</h2>
     <p class="intro">Open to full-stack / MERN internship and entry-level roles.</p>
 
     <div class="contact-term">
-      <div class="row"><span class="k">email</span><span class="v"><a href="mailto:sagarsahu27062005@gmail.com">sagarsahu27062005@gmail.com</a></span></div>
+      <div class="row"><span class="k">email</span><span class="v"><a href="mailto:sagarsahuji000@gmail.com">sagarsahuji000@gmail.com</a></span></div>
       <div class="row"><span class="k">github</span><span class="v"><a href="https://github.com/SagarS2005" target="_blank" rel="noopener">github.com/SagarS2005</a></span></div>
-      <div class="row"><span class="k">linkedin</span><span class="v"><a href="https://linkedin.com/in/sagar-sahu2005" target="_blank" rel="noopener">linkedin.com/in/sagar-sahu2005</a></span></div>
+      <div class="row"><span class="k">linkedin</span><span class="v"><a href="https://linkedin.com/in/sagarsahu2005" target="_blank" rel="noopener">linkedin.com/in/sagarsahu2005</a></span></div>
       <div class="row"><span class="k">leetcode</span><span class="v"><a href="https://leetcode.com/SagarS2005" target="_blank" rel="noopener">leetcode.com/SagarS2005</a></span></div>
       <div class="row"><span class="k">location</span><span class="v">Raipur, Chhattisgarh, India</span></div>
     </div>
@@ -494,11 +573,10 @@
 </footer>
 
 <script>
-  // Active tab highlighting on scroll
-  const sections = document.querySelectorAll('section, header.hero');
-  const tabs = document.querySelectorAll('.tab');
-  const map = {about:'about', stack:'stack', projects:'projects', achievements:'achievements', contact:'contact'};
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+  // Active tab highlighting on scroll
+  const tabs = document.querySelectorAll('.tab');
   const io = new IntersectionObserver((entries)=>{
     entries.forEach(e=>{
       if(e.isIntersecting){
@@ -510,10 +588,40 @@
   }, {rootMargin:'-40% 0px -55% 0px'});
   document.querySelectorAll('section[id]').forEach(s=>io.observe(s));
 
+  // Scroll-triggered reveal for sections + individual cards
+  const revealTargets = document.querySelectorAll('.reveal, .reveal-item');
+  if(prefersReduced){
+    revealTargets.forEach(el=>el.classList.add('in-view'));
+  } else {
+    const revealIO = new IntersectionObserver((entries)=>{
+      entries.forEach(entry=>{
+        if(entry.isIntersecting){
+          entry.target.classList.add('in-view');
+          revealIO.unobserve(entry.target);
+        }
+      });
+    }, {threshold:0.12, rootMargin:'0px 0px -6% 0px'});
+    revealTargets.forEach(el=>revealIO.observe(el));
+  }
+
+  // Stagger project/stat/timeline cards within their section
+  document.querySelectorAll('.reveal-item').forEach((el, i)=>{
+    el.style.transitionDelay = (i % 4) * 90 + 'ms';
+  });
+
+  // Cursor-follow glow in hero
+  const hero = document.getElementById('heroSection');
+  if(hero && !prefersReduced){
+    hero.addEventListener('mousemove', (e)=>{
+      const r = hero.getBoundingClientRect();
+      hero.style.setProperty('--mx', (e.clientX - r.left) + 'px');
+      hero.style.setProperty('--my', (e.clientY - r.top) + 'px');
+    });
+  }
+
   // Typing effect for the terminal "whoami" output, reduced-motion aware
   const out = document.getElementById('typedOut');
   const full = "Sagar Sahu — Full-Stack Developer";
-  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   if(!prefersReduced){
     out.textContent = '';
